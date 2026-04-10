@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ritual</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ── Stage (dark outer page) ── -->
+  <div class="stage">
+
+    <!-- ── Laptop shell ── -->
+    <div class="laptop">
+
+      <!-- ── Screen lid ── -->
+      <div class="lid">
+
+        <!-- macOS-style browser chrome -->
+        <div class="chrome">
+          <div class="chrome__dots">
+            <span class="cdot cdot--red"></span>
+            <span class="cdot cdot--ylw"></span>
+            <span class="cdot cdot--grn"></span>
+          </div>
+          <span class="chrome__url">ritual.local</span>
+          <div class="chrome__spacer"></div>
+        </div>
+
+        <!-- App screen -->
+        <div class="screen">
+
+          <!-- Top navigation -->
+          <nav class="nav">
+            <span class="nav__brand">ritual</span>
+            <div class="nav__links">
+              <button class="nav__btn active" data-view="habits">Habits</button>
+              <button class="nav__btn" data-view="report">Report</button>
+            </div>
+          </nav>
+
+          <!-- Page canvas -->
+          <div class="canvas">
+
+            <!-- ◆ HABITS VIEW ─────────────────── -->
+            <div class="view active" id="view-habits">
+              <div class="row">
+
+                <!-- Section label (left column) -->
+                <div class="section">
+                  <h1 class="section__title">Habits</h1>
+                  <p class="section__sub">daily practice</p>
+                </div>
+
+                <!-- Habit list (center) -->
+                <ul class="hlist" id="hlist">
+                  <li class="hi" data-n="1">
+                    <span class="hi__sym">◇</span>
+                    <span class="hi__name">Sleep 7–8 hours</span>
+                  </li>
+                  <li class="hi" data-n="2">
+                    <span class="hi__sym">◇</span>
+                    <span class="hi__name">Eat healthy meals</span>
+                  </li>
+                  <li class="hi" data-n="3">
+                    <span class="hi__sym">◇</span>
+                    <span class="hi__name">Social media ≤ 90 min</span>
+                  </li>
+                  <li class="hi" data-n="4">
+                    <span class="hi__sym">◇</span>
+                    <span class="hi__name">No adult content</span>
+                  </li>
+                  <li class="hi" data-n="5">
+                    <span class="hi__sym">◇</span>
+                    <span class="hi__name">Drink 2L water</span>
+                  </li>
+                  <li class="hi" data-n="6">
+                    <span class="hi__sym">◇</span>
+                    <span class="hi__name">Study ≥ 2 hours</span>
+                  </li>
+                  <li class="hi" data-n="7">
+                    <span class="hi__sym">◇</span>
+                    <span class="hi__name">Exercise 30 minutes</span>
+                  </li>
+                  <li class="hi" data-n="8">
+                    <span class="hi__sym">◇</span>
+                    <span class="hi__name">Read 30 minutes</span>
+                  </li>
+                  <li class="hi" data-n="9">
+                    <span class="hi__sym">◇</span>
+                    <span class="hi__name">Journal & reflect</span>
+                  </li>
+                  <li class="hi" data-n="10">
+                    <span class="hi__sym">◇</span>
+                    <span class="hi__name">Plan tomorrow</span>
+                  </li>
+                </ul>
+
+                <!-- Position indicator (right edge) -->
+                <div class="ind" id="ind">
+                  <div class="ind__rail" id="indRail">
+                    <div class="ind__fill" id="indFill"></div>
+                    <div class="ind__dot" id="indDot"></div>
+                  </div>
+                  <div class="ind__count">
+                    <span class="ind__cur" id="indCur">—</span>
+                    <span class="ind__tot">/10</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <!-- /HABITS VIEW -->
+
+            <!-- ◆ REPORT VIEW ──────────────────── -->
+            <div class="view" id="view-report">
+              <div class="row">
+                <div class="section">
+                  <h1 class="section__title">Report</h1>
+                  <p class="section__sub">coming soon</p>
+                </div>
+              </div>
+            </div>
+            <!-- /REPORT VIEW -->
+
+          </div>
+          <!-- /canvas -->
+
+        </div>
+        <!-- /screen -->
+
+      </div>
+      <!-- /lid -->
+
+      <!-- Laptop base / stand -->
+      <div class="base">
+        <div class="base__hinge"></div>
+        <div class="base__pad">
+          <div class="base__notch"></div>
+        </div>
+      </div>
+
+    </div>
+    <!-- /laptop -->
+
+  </div>
+  <!-- /stage -->
+
+  <script src="app.js"></script>
+</body>
+</html>

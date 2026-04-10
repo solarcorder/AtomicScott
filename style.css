@@ -1,0 +1,461 @@
+/* ─────────────────────────────────────────
+   ritual — Habit System
+   Stylesheet
+   ───────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Design tokens ─────────────────────── */
+:root {
+  /* Core palette */
+  --c-bg-stage:   #0E0C09;
+  --c-bg-bezel:   #1C1912;
+  --c-bg-chrome:  #141209;
+  --c-bg-screen:  #F8F5F0;
+
+  /* Text */
+  --c-text-main:  #24201B;
+  --c-text-dim:   #9A9188;
+  --c-text-mute:  #C5BBB0;
+
+  /* Lines & symbols */
+  --c-line:       #E5DFD6;
+  --c-sym-idle:   #C8BFB2;
+  --c-sym-live:   #24201B;
+
+  /* Typography */
+  --f-display: 'Cormorant Garamond', Georgia, serif;
+  --f-ui:      'Jost', system-ui, sans-serif;
+  --f-mono:    'DM Mono', 'Courier New', monospace;
+
+  /* Motion */
+  --spring: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Reset & base ───────────────────────── */
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--c-bg-stage);
+  font-family: var(--f-ui);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Stage ──────────────────────────────── */
+.stage {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse 80% 60% at 55% 45%, rgba(255, 248, 225, 0.03) 0%, transparent 70%),
+    var(--c-bg-stage);
+}
+
+/* ── Laptop shell ───────────────────────── */
+.laptop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(92vw, 1020px);
+  filter: drop-shadow(0 48px 96px rgba(0, 0, 0, 0.78));
+  animation: laptopReveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes laptopReveal {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Lid (screen bezel) ─────────────────── */
+.lid {
+  width: 100%;
+  background: var(--c-bg-bezel);
+  border-radius: 14px 14px 0 0;
+  padding: 10px 10px 0;
+  border: 1px solid rgba(255, 255, 255, 0.058);
+  border-bottom: none;
+  position: relative;
+}
+
+/* Webcam dot */
+.lid::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Browser chrome bar ─────────────────── */
+.chrome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--c-bg-chrome);
+  border-radius: 8px 8px 0 0;
+  padding: 0 14px;
+  height: 30px;
+}
+
+.chrome__dots {
+  display: flex;
+  gap: 6px;
+}
+
+.cdot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cdot--red { background: #FF5F57; }
+.cdot--ylw { background: #FEBC2E; }
+.cdot--grn { background: #28C840; }
+
+.chrome__url {
+  flex: 1;
+  text-align: center;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  color: #44403A;
+  letter-spacing: 0.08em;
+  user-select: none;
+}
+
+.chrome__spacer {
+  width: 42px;
+  flex-shrink: 0;
+}
+
+/* ── App screen ─────────────────────────── */
+.screen {
+  background: var(--c-bg-screen);
+  height: 510px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 0 0 2px 2px;
+}
+
+/* ── Top navigation ─────────────────────── */
+.nav {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 50px;
+  border-bottom: 1px solid var(--c-line);
+}
+
+.nav__brand {
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--c-text-main);
+  letter-spacing: 0.12em;
+  user-select: none;
+}
+
+.nav__links {
+  display: flex;
+  gap: 38px;
+  align-items: center;
+}
+
+.nav__btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--f-ui);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-text-dim);
+  padding: 4px 0;
+  position: relative;
+  transition: color 0.25s ease;
+  outline: none;
+}
+
+/* Active / hover underline */
+.nav__btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--c-text-main);
+  transition: width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav__btn.active {
+  color: var(--c-text-main);
+}
+
+.nav__btn.active::after,
+.nav__btn:hover::after {
+  width: 100%;
+}
+
+.nav__btn:hover {
+  color: var(--c-text-main);
+}
+
+/* ── Canvas (page area) ─────────────────── */
+.canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Views ──────────────────────────────── */
+.view {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.38s ease, transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.view.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+/* ── Row layout inside a view ───────────── */
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  padding: 34px 40px;
+  height: 100%;
+}
+
+/* ── Section heading (left column) ─────── */
+.section {
+  flex-shrink: 0;
+  width: 142px;
+  padding-top: 2px;
+}
+
+.section__title {
+  font-family: var(--f-display);
+  font-size: 46px;
+  font-weight: 300;
+  color: var(--c-text-main);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.section__sub {
+  font-family: var(--f-ui);
+  font-size: 10px;
+  font-weight: 300;
+  color: var(--c-text-mute);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+/* ── Habit list (center column) ─────────── */
+.hlist {
+  flex: 1;
+  list-style: none;
+  padding-top: 3px;
+}
+
+.hi {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--c-line);
+  cursor: default;
+
+  /* Staggered entrance animation */
+  opacity: 0;
+  transform: translateX(-7px);
+  animation: hiReveal 0.44s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hi:first-child { border-top: 1px solid var(--c-line); }
+
+/* Stagger delays */
+.hi:nth-child(1)  { animation-delay: 0.52s; }
+.hi:nth-child(2)  { animation-delay: 0.57s; }
+.hi:nth-child(3)  { animation-delay: 0.62s; }
+.hi:nth-child(4)  { animation-delay: 0.67s; }
+.hi:nth-child(5)  { animation-delay: 0.72s; }
+.hi:nth-child(6)  { animation-delay: 0.77s; }
+.hi:nth-child(7)  { animation-delay: 0.82s; }
+.hi:nth-child(8)  { animation-delay: 0.87s; }
+.hi:nth-child(9)  { animation-delay: 0.92s; }
+.hi:nth-child(10) { animation-delay: 0.97s; }
+
+@keyframes hiReveal {
+  from { opacity: 0; transform: translateX(-7px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Symbol */
+.hi__sym {
+  flex-shrink: 0;
+  width: 14px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--c-sym-idle);
+  transition: color 0.22s ease;
+  display: inline-block;
+  line-height: 1;
+}
+
+/* Habit name */
+.hi__name {
+  font-family: var(--f-ui);
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--c-text-main);
+  letter-spacing: 0.01em;
+  transition: letter-spacing 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Hover state (set via JS) */
+.hi.lit .hi__sym {
+  color: var(--c-sym-live);
+}
+
+.hi.lit .hi__name {
+  letter-spacing: 0.055em;
+}
+
+/* ── Position indicator (right column) ─── */
+.ind {
+  flex-shrink: 0;
+  width: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-top: 3px;
+}
+
+/* Vertical rail */
+.ind__rail {
+  position: relative;
+  width: 1px;
+  background: var(--c-line);
+  height: 340px; /* overridden by JS to match list height */
+}
+
+/* Fill line (top → dot) */
+.ind__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: var(--c-text-main);
+  transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Sliding dot */
+.ind__dot {
+  position: absolute;
+  left: 50%;
+  top: 0%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c-text-main);
+  transform: translate(-50%, -50%);
+  transition:
+    top 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.22s ease;
+  opacity: 0;
+}
+
+.ind__dot.on {
+  opacity: 1;
+}
+
+/* Counter */
+.ind__count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.ind__cur {
+  display: block;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--c-text-main);
+  line-height: 1;
+  transition: opacity 0.2s ease;
+  min-width: 18px;
+  text-align: center;
+}
+
+.ind__tot {
+  display: block;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  color: var(--c-text-mute);
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+/* ── Laptop base / stand ─────────────────── */
+.base {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.base__hinge {
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(to bottom, #191610, #0E0C09);
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.base__pad {
+  width: 106%;
+  height: 16px;
+  background: linear-gradient(to bottom, #22201A, #1A1814);
+  border-radius: 0 0 7px 7px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-top: none;
+}
+
+.base__notch {
+  width: 68px;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 2px;
+}
