@@ -1,7 +1,22 @@
 /* ─────────────────────────────────────────
-   Atomic Scott — Habit System  v2
-   App Logic
+   Atomic Scott — Habit System  v3
+   App Logic + LocalStorage persistence
    ───────────────────────────────────────── */
+
+const DEFAULT_HABITS = [
+  'Sleep 7–8 hours',
+  'Eat healthy meals',
+  'Social media ≤ 90 min',
+  'No adult content',
+  'Drink 2L water',
+  'Study ≥ 2 hours',
+  'Exercise 30 minutes',
+  'Read 30 minutes',
+  'Journal & reflect',
+  'Plan tomorrow',
+];
+
+const STORAGE_KEY = 'atomicscott_habits';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -20,11 +35,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const indCur     = document.getElementById('indCur');
   const indTot     = document.getElementById('indTot');
 
-
   /* ══ STATE ═════════════════════════════ */
-  let editMode   = false;
-  let addOpen    = false;
+  let editMode = false;
+  let addOpen  = false;
 
+  /* ══ LOCALSTORAGE ══════════════════════ */
+  function loadHabits() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }
+
+  function saveHabits() {
+    const names = [...hlist.querySelectorAll('.hi:not(.removing)')]
+      .map(el => el.querySelector('.hi__name').textContent);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(names));
+  }
+
+  /* ══ RENDER INITIAL LIST ═══════════════ */
+  function renderInitial() {
+    const stored = loadHabits();
+    const habits = stored ?? DEFAULT_HABITS;
+    habits.forEach((name, i) => {
+      hlist.appendChild(makeItem(name, i + 1, false));
+    });
+    syncRailHeight();
+    indTot.textContent = '/' + habits.length;
+    bindHoverEvents();
+  }
 
   /* ══ NAVIGATION ═══════════════════════ */
   navBtns.forEach(btn => {
@@ -36,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-
   /* ══ INDICATOR HELPERS ══════════════════ */
   function totalHabits() {
     return hlist.querySelectorAll('.hi:not(.removing)').length;
@@ -44,13 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function syncRailHeight() {
     if (!indRail || !hlist) return;
-    indRail.style.height = hlist.offsetHeight + 'px';
+    indRail.style.height = Math.max(hlist.offsetHeight, 40) + 'px';
   }
 
   function setIndicator(n) {
     const total = totalHabits();
     indTot.textContent = '/' + total;
-
     if (n === null) {
       indDot.classList.remove('on');
       indFill.style.height = '0%';
@@ -64,12 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {
     indCur.textContent   = String(n).padStart(2, '0');
   }
 
-  // Renumber all visible items sequentially
   function renumber() {
     const items = hlist.querySelectorAll('.hi:not(.removing)');
-    items.forEach((el, i) => {
-      el.dataset.n = i + 1;
-    });
+    items.forEach((el, i) => { el.dataset.n = i + 1; });
     syncRailHeight();
     indTot.textContent = '/' + items.length;
   }
@@ -81,13 +115,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('resize', syncRailHeight);
 
+  /* ══ MAKE ITEM ══════════════════════════ */
+  function makeItem(name, n, animate = true) {
+    const li = document.createElement('li');
+    li.className = 'hi';
+    li.dataset.n = n;
+    li.innerHTML = `
+      <span class="hi__sym">◇</span>
+      <span class="hi__name">${escapeHtml(name)}</span>
+      <button class="hi__del" tabindex="-1">×</button>
+    `;
+    if (!animate) {
+      // Let CSS animation handle it from nth-child delays
+    }
+    return li;
+  }
 
-  /* ══ HABIT HOVER (indicator + enlarge) ═ */
+  /* ══ HABIT HOVER ════════════════════════ */
   function bindHoverEvents() {
     const habits = hlist.querySelectorAll('.hi');
 
     habits.forEach(hi => {
-      // Remove old listeners by cloning? No — we attach once, guard with class
       hi.addEventListener('mouseenter', () => {
         if (hi.classList.contains('removing')) return;
         habits.forEach(h => {
@@ -109,19 +157,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  bindHoverEvents();
-
-
   /* ══ EDIT MODE ═════════════════════════ */
   editToggle.addEventListener('click', () => {
     editMode = !editMode;
     hlist.classList.toggle('editing', editMode);
     editToggle.classList.toggle('active', editMode);
-
-    // Close add panel if open
     if (editMode && addOpen) closeAdd();
   });
-
 
   /* ══ DELETE HABIT ══════════════════════ */
   hlist.addEventListener('click', e => {
@@ -131,21 +173,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const hi = delBtn.closest('.hi');
     hi.classList.add('removing');
 
-    // After animation, remove from DOM and renumber
     hi.addEventListener('animationend', () => {
       hi.remove();
       renumber();
       setIndicator(null);
+      saveHabits();
     }, { once: true });
   });
-
 
   /* ══ ADD HABIT ══════════════════════════ */
   function openAdd() {
     addOpen = true;
     addPanel.classList.add('open');
     addToggle.classList.add('active');
-    // Close edit mode
     if (editMode) {
       editMode = false;
       hlist.classList.remove('editing');
@@ -165,22 +205,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const name = addInput.value.trim();
     if (!name) return;
 
-    const total = totalHabits();
-    const newN  = total + 1;
+    const newN = totalHabits() + 1;
+    const li = makeItem(name, newN, true);
 
-    const li = document.createElement('li');
-    li.className = 'hi';
-    li.dataset.n = newN;
-    li.innerHTML = `
-      <span class="hi__sym">◇</span>
-      <span class="hi__name">${escapeHtml(name)}</span>
-      <button class="hi__del" tabindex="-1">×</button>
-    `;
-
-    // Animate in
     li.style.opacity   = '0';
     li.style.transform = 'translateX(-6px)';
-
     hlist.appendChild(li);
 
     requestAnimationFrame(() => {
@@ -192,17 +221,16 @@ document.addEventListener('DOMContentLoaded', () => {
     renumber();
     bindHoverEvents();
     closeAdd();
+    saveHabits();
   }
 
   addToggle.addEventListener('click', () => addOpen ? closeAdd() : openAdd());
   addCancel.addEventListener('click', closeAdd);
   addConfirm.addEventListener('click', commitAdd);
-
   addInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') commitAdd();
+    if (e.key === 'Enter')  commitAdd();
     if (e.key === 'Escape') closeAdd();
   });
-
 
   /* ══ UTILITY ════════════════════════════ */
   function escapeHtml(str) {
@@ -213,4 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/"/g, '&quot;');
   }
 
+  /* ══ INIT ═══════════════════════════════ */
+  renderInitial();
 });
