@@ -29,15 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const addConfirm = document.getElementById('addConfirm');
   const addCancel  = document.getElementById('addCancel');
   const hlist      = document.getElementById('hlist');
-  const indRail    = document.getElementById('indRail');
   const indFill    = document.getElementById('indFill');
   const indDot     = document.getElementById('indDot');
   const indCur     = document.getElementById('indCur');
   const indTot     = document.getElementById('indTot');
 
   /* ══ STATE ═════════════════════════════ */
-  let editMode = false;
-  let addOpen  = false;
+  let editMode  = false;
+  let addOpen   = false;
+  let hoveredN  = null;
 
   /* ══ LOCALSTORAGE ══════════════════════ */
   function loadHabits() {
@@ -58,10 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const stored = loadHabits();
     const habits = stored ?? DEFAULT_HABITS;
     habits.forEach((name, i) => {
-      hlist.appendChild(makeItem(name, i + 1, false));
+      hlist.appendChild(makeItem(name, i + 1));
     });
-    syncRailHeight();
-    indTot.textContent = '/' + habits.length;
+    updateTotal();
     bindHoverEvents();
   }
 
@@ -75,14 +74,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ══ INDICATOR HELPERS ══════════════════ */
+  /* ══ INDICATOR ═════════════════════════ */
   function totalHabits() {
     return hlist.querySelectorAll('.hi:not(.removing)').length;
   }
 
-  function syncRailHeight() {
-    if (!indRail || !hlist) return;
-    indRail.style.height = Math.max(hlist.offsetHeight, 40) + 'px';
+  function updateTotal() {
+    indTot.textContent = '/' + totalHabits();
   }
 
   function setIndicator(n) {
@@ -94,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
       indCur.textContent   = '—';
       return;
     }
-    const pct = total === 1 ? 0 : ((n - 1) / (total - 1)) * 100;
+    const pct = total <= 1 ? 0 : ((n - 1) / (total - 1)) * 100;
     indDot.style.top     = pct + '%';
     indFill.style.height = pct + '%';
     indDot.classList.add('on');
@@ -102,21 +100,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renumber() {
-    const items = hlist.querySelectorAll('.hi:not(.removing)');
-    items.forEach((el, i) => { el.dataset.n = i + 1; });
-    syncRailHeight();
-    indTot.textContent = '/' + items.length;
+    hlist.querySelectorAll('.hi:not(.removing)').forEach((el, i) => {
+      el.dataset.n = i + 1;
+    });
+    updateTotal();
   }
 
-  requestAnimationFrame(() => {
-    syncRailHeight();
-    indTot.textContent = '/' + totalHabits();
-  });
-
-  window.addEventListener('resize', syncRailHeight);
-
   /* ══ MAKE ITEM ══════════════════════════ */
-  function makeItem(name, n, animate = true) {
+  function makeItem(name, n) {
     const li = document.createElement('li');
     li.className = 'hi';
     li.dataset.n = n;
@@ -125,16 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
       <span class="hi__name">${escapeHtml(name)}</span>
       <button class="hi__del" tabindex="-1">×</button>
     `;
-    if (!animate) {
-      // Let CSS animation handle it from nth-child delays
-    }
     return li;
   }
 
-  /* ══ HABIT HOVER ════════════════════════ */
+  /* ══ HOVER ══════════════════════════════ */
   function bindHoverEvents() {
     const habits = hlist.querySelectorAll('.hi');
-
     habits.forEach(hi => {
       hi.addEventListener('mouseenter', () => {
         if (hi.classList.contains('removing')) return;
@@ -144,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         hi.classList.add('lit');
         hi.querySelector('.hi__sym').textContent = '◆';
-        setIndicator(parseInt(hi.dataset.n, 10));
+        hoveredN = parseInt(hi.dataset.n, 10);
+        setIndicator(hoveredN);
       });
     });
 
@@ -153,6 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
         h.classList.remove('lit');
         h.querySelector('.hi__sym').textContent = '◇';
       });
+      hoveredN = null;
       setIndicator(null);
     });
   }
@@ -165,23 +154,22 @@ document.addEventListener('DOMContentLoaded', () => {
     if (editMode && addOpen) closeAdd();
   });
 
-  /* ══ DELETE HABIT ══════════════════════ */
+  /* ══ DELETE ════════════════════════════ */
   hlist.addEventListener('click', e => {
     const delBtn = e.target.closest('.hi__del');
     if (!delBtn || !editMode) return;
-
     const hi = delBtn.closest('.hi');
     hi.classList.add('removing');
-
     hi.addEventListener('animationend', () => {
       hi.remove();
       renumber();
       setIndicator(null);
+      bindHoverEvents();
       saveHabits();
     }, { once: true });
   });
 
-  /* ══ ADD HABIT ══════════════════════════ */
+  /* ══ ADD ════════════════════════════════ */
   function openAdd() {
     addOpen = true;
     addPanel.classList.add('open');
@@ -206,16 +194,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!name) return;
 
     const newN = totalHabits() + 1;
-    const li = makeItem(name, newN, true);
-
+    const li = makeItem(name, newN);
     li.style.opacity   = '0';
     li.style.transform = 'translateX(-6px)';
     hlist.appendChild(li);
 
+    // Scroll new item into view inside the list container (not the page)
     requestAnimationFrame(() => {
       li.style.transition = 'opacity .36s ease, transform .36s cubic-bezier(0.22,1,0.36,1)';
       li.style.opacity    = '1';
       li.style.transform  = 'translateX(0)';
+      li.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
 
     renumber();
@@ -241,6 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/"/g, '&quot;');
   }
 
-  /* ══ INIT ═══════════════════════════════ */
+  /* ══ INIT ════════════════════════════════ */
   renderInitial();
 });
