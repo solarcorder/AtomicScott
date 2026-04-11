@@ -17,10 +17,9 @@
   /* nav height — used to compute canvas height */
   --nav-h: 52px;
 
-  /* frame dimensions — same aspect ratio as the viewport window it sits in */
-  --frame-w: min(92vw, 1120px);
-  /* height = width × (9/16) keeps it widescreen like the outer stage */
-  --frame-h: min(80vh, 630px);
+  /* frame dimensions — large, close to the stage edges */
+  --frame-w: min(96vw, 1400px);
+  --frame-h: min(90vh, 900px);
 
   --shadow-frame:
     0  2px   4px rgba(0,0,0,.06),
@@ -274,13 +273,10 @@ html, body {
   overflow-y: auto;
   list-style: none;
   padding-right: 6px;
-  /* thin custom scrollbar */
-  scrollbar-width: thin;
-  scrollbar-color: var(--c-line) transparent;
+  /* invisible scrollbar */
+  scrollbar-width: none;
 }
-.hlist::-webkit-scrollbar { width: 3px; }
-.hlist::-webkit-scrollbar-track { background: transparent; }
-.hlist::-webkit-scrollbar-thumb { background: var(--c-line); border-radius: 2px; }
+.hlist::-webkit-scrollbar { display: none; }
 
 .hi {
   display: flex; align-items: center; gap: 12px;
