@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atomic Scott</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="habits-panel.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
@@ -32,53 +33,72 @@
         <div class="view active" id="view-habits">
           <div class="habits-wrap">
 
-            <!-- Title -->
+            <!-- Title spans full width above both columns -->
             <h1 class="section__title">Habits</h1>
 
-            <!-- Controls row — sits between title and list -->
-            <div class="controls-row">
-              <button class="ctrl-btn" id="editToggle">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-                Edit
-              </button>
-              <button class="ctrl-btn ctrl-btn--add" id="addToggle">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-                  <line x1="12" y1="5" x2="12" y2="19"/>
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                Add habit
-              </button>
-            </div>
+            <!--
+              Two-column body.
+              .habits-left   — list (controls + add panel + hlist + indicator)
+              .habits-divider — 1px vertical separator
+              .habits-right  — detail panel, populated by habits-panel.js (HP)
+            -->
+            <div class="habits-columns">
 
-            <!-- Add panel -->
-            <div class="add-panel" id="addPanel">
-              <span class="add-panel__label">new habit</span>
-              <input class="add-input" id="addInput" type="text"
-                     placeholder="name your habit…" maxlength="60" autocomplete="off" />
-              <button class="add-confirm" id="addConfirm">Add</button>
-              <button class="add-cancel" id="addCancel">×</button>
-            </div>
+              <!-- Left: habit list -->
+              <div class="habits-left">
 
-            <!-- Scrollable list + indicator -->
-            <div class="list-area">
-              <ul class="hlist" id="hlist"></ul>
-              <div class="ind" id="ind">
-                <div class="ind__rail" id="indRail">
-                  <div class="ind__fill" id="indFill"></div>
-                  <div class="ind__dot"  id="indDot"></div>
+                <div class="controls-row">
+                  <button class="ctrl-btn" id="editToggle">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Edit
+                  </button>
+                  <button class="ctrl-btn ctrl-btn--add" id="addToggle">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                      <line x1="12" y1="5" x2="12" y2="19"/>
+                      <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    Add habit
+                  </button>
                 </div>
-                <div class="ind__count">
-                  <span class="ind__cur" id="indCur">—</span>
-                  <span class="ind__tot" id="indTot">/0</span>
+
+                <div class="add-panel" id="addPanel">
+                  <span class="add-panel__label">new habit</span>
+                  <input class="add-input" id="addInput" type="text"
+                         placeholder="name your habit…" maxlength="60" autocomplete="off" />
+                  <button class="add-confirm" id="addConfirm">Add</button>
+                  <button class="add-cancel" id="addCancel">×</button>
                 </div>
+
+                <div class="list-area">
+                  <ul class="hlist" id="hlist"></ul>
+                  <div class="ind" id="ind">
+                    <div class="ind__rail" id="indRail">
+                      <div class="ind__fill" id="indFill"></div>
+                      <div class="ind__dot"  id="indDot"></div>
+                    </div>
+                    <div class="ind__count">
+                      <span class="ind__cur" id="indCur">—</span>
+                      <span class="ind__tot" id="indTot">/0</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div><!-- /.habits-left -->
+
+              <div class="habits-divider"></div>
+
+              <!-- Right: detail panel -->
+              <div class="habits-right" id="habitPanel">
+                <!-- HP.renderEmpty() populates this on load -->
               </div>
-            </div>
 
-          </div>
-        </div>
+            </div><!-- /.habits-columns -->
+
+          </div><!-- /.habits-wrap -->
+        </div><!-- /#view-habits -->
 
         <!-- REPORT VIEW -->
         <div class="view" id="view-report">
@@ -88,12 +108,21 @@
           </div>
         </div>
 
-      </div>
-    </div>
-  </div>
+      </div><!-- /.canvas -->
+    </div><!-- /.frame -->
+  </div><!-- /.stage -->
 
+  <!--
+    Load order (each depends on the one before it):
+      1. data-layer.js     → AS  (localStorage schema + CRUD)
+      2. scoring-engine.js → SE  (all formulas, reads AS.*)
+      3. habits-panel.js   → HP  (right panel DOM, reads AS.* + SE.*)
+      4. app.js            → wires the list, calls HP.*
+  -->
   <script src="data-layer.js"></script>
   <script src="scoring-engine.js"></script>
+  <script src="habits-panel.js"></script>
   <script src="app.js"></script>
+
 </body>
 </html>
