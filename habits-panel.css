@@ -1,0 +1,224 @@
+/* ─────────────────────────────────────────
+   Atomic Scott — Habit Detail Panel  (Step 3)
+   Styles for #habitPanel and its children.
+   All class names prefixed .hd-
+   ───────────────────────────────────────── */
+
+/* ── Empty / placeholder state ── */
+.hd-empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.hd-empty__msg {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  color: var(--c-text-mute);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+/* ── Content wrapper — provides internal padding ── */
+.hd-content {
+  padding: 28px 40px 32px 36px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ── */
+.hd-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.hd-pillar-tag {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  color: var(--c-text-mute);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.hd-badge {
+  font-family: var(--f-mono);
+  font-size: 8px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+  border: 1px solid var(--c-line);
+  color: var(--c-text-mute);
+}
+.hd-badge--active {
+  border-color: rgba(26, 23, 20, .35);
+  color: var(--c-text-main);
+}
+
+.hd-name {
+  font-family: var(--f-display);
+  font-size: 36px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--c-text-main);
+  line-height: 1.1;
+  letter-spacing: -.01em;
+}
+
+/* ── Section divider ── */
+.hd-divider {
+  height: 1px;
+  background: var(--c-line);
+  margin: 20px 0;
+}
+
+/* ── Generic section label ── */
+.hd-label {
+  display: block;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  color: var(--c-text-mute);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* ── Today's score display ── */
+.hd-score-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.hd-score-num {
+  font-family: var(--f-mono);
+  font-size: 38px;
+  font-weight: 300;
+  color: var(--c-text-main);
+  line-height: 1;
+  min-width: 56px;
+}
+.hd-outcome-label {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  color: var(--c-text-mute);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+/* ── Log buttons: Done / Partial / Skip ── */
+.hd-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.hd-btn {
+  display: inline-flex; align-items: center;
+  background: none;
+  border: 1px solid var(--c-line);
+  border-radius: 2px;
+  padding: 6px 20px;
+  cursor: pointer;
+  font-family: var(--f-ui);
+  font-size: 10px; font-weight: 300;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--c-text-dim);
+  transition: color .2s ease, border-color .2s ease, background .2s ease;
+  outline: none;
+}
+.hd-btn:hover {
+  color: var(--c-text-main);
+  border-color: var(--c-text-main);
+}
+.hd-btn--active {
+  background: var(--c-text-main);
+  border-color: var(--c-text-main);
+  color: var(--c-bg-frame);
+}
+.hd-btn--active:hover {
+  background: var(--c-text-main);
+  color: var(--c-bg-frame);
+}
+
+/* ── Inactive / recovery notes ── */
+.hd-inactive-note {
+  font-family: var(--f-mono);
+  font-size: 8px;
+  color: var(--c-text-mute);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-top: 10px;
+}
+
+/* ── Stat row: streak · identity · rank ── */
+.hd-section--row {
+  display: flex;
+  gap: 36px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.hd-stat-block {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.hd-stat {
+  font-family: var(--f-mono);
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--c-text-main);
+  line-height: 1;
+}
+/* Streak hidden in recovery mode (system-core §13.2) */
+.hd-stat--hidden {
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Block preview ── */
+.hd-block-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+/* Engagement zone label */
+.hd-zone {
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--c-text-mute);
+}
+.hd-zone--growth { color: var(--c-text-main); }
+.hd-zone--high   { color: var(--c-text-main); }
+.hd-zone--peak   { color: var(--c-text-main); font-weight: 400; }
+.hd-zone--below  { color: var(--c-text-dim); }
+.hd-zone--crisis { color: var(--c-text-dim); }
+
+/* ── 5-day cells ── */
+.hd-days {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.hd-day {
+  display: flex; align-items: center; justify-content: center;
+  min-width: 38px; height: 28px; padding: 0 4px;
+  font-family: var(--f-mono); font-size: 10px;
+  border: 1px solid var(--c-line);
+  border-radius: 2px;
+  color: var(--c-text-mute);
+}
+.hd-day--today  { border-style: dashed; border-color: var(--c-text-dim); color: var(--c-text-main); }
+.hd-day--pos    { color: var(--c-text-main); border-color: rgba(26,23,20,.4); }
+.hd-day--neg    { color: var(--c-text-dim); background: rgba(26,23,20,.03); }
+.hd-day--zero   { color: var(--c-text-mute); }
+.hd-day--future { color: var(--c-line); border-color: transparent; background: transparent; }
